@@ -15,12 +15,11 @@
     "url": "git://github.com/ewanharris/ti.windows-remote-deployment.git"
   },
   "files": [
-      "command/",
-      "hook/",
-      "scripts/",
-      "utils.js",
-      "package.json",
-      "LICENSE"
+    "command/",
+    "hook/",
+    "scripts/",
+    "utils.js",
+    "package.json",
+    "LICENSE"
   ]
-
 }

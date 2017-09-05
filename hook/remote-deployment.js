@@ -45,23 +45,29 @@ exports.init = function init(logger, config, cli, appc) {
 
 	// Configures our little batch of options
 	cli.addHook('build.windows.config', function (data, finished) {
-			// We don't need the extra logic here as Windows support wasn't in 3.2.1
-			// data.ctx.WindowsBuilder.fooooo = 'fuck';
-			const r = data.result[1] || {};
-			r.flags || (r.flags = {});
-			r.flags['remote-deploy'] = {
-				default: false,
-				desc: 'enable remote deployment'
-			};
+		// We don't need the extra logic here as Windows support wasn't in 3.2.1
+		const r = data.result[1] || {};
+		r.flags || (r.flags = {});
+		r.flags['remote-deploy'] = {
+			default: false,
+			desc: 'enable remote deployment'
+		};
 
-			r.options || (r.options = {});
-			r.options.ip = {
-				default: null,
-				desc: 'Device IP address'
-			};
+		r.options || (r.options = {});
+		r.options.ip = {
+			default: null,
+			desc: 'Device IP address'
+		};
 
-			finished(null, data);
-		});
+		finished(null, data);
+	});
+
+	cli.addHook('build.pre.construct', function(data, finished) {
+		if(cli.argv['remote-deploy']) {
+			cli.argv['build-only'] = true;
+		}
+		finished();
+	});
 
 	/**
 	 * General thoughts on the structure of the plugin
@@ -149,7 +155,7 @@ exports.init = function init(logger, config, cli, appc) {
 								// Maybe we're not paired? Prompt for code with docs
 								logger.warn('Was unable to connect to the specified IP');
 								logger.warn('Guiding through the pairing process');
-								logger.error('Currently unimplemented');
+								logger.error('Please use ti pair-device as this is currently unimplemented');
 								process.exit(1);
 							} else {
 								// All good in the hood, lets move on...

@@ -75,8 +75,7 @@ exports.run = function run(logger, config, cli, finished) {
 	// perform the command's logic
 	windowslib.windowsphone.detect(function(err, results) {
 		const cmd = `"${results['windowsphone']['10.0'].deployCmd}"`;
-		logger.info(cmd);
-		if (!cmd) {
+		if (cmd) {
 			exec(`${cmd} list -pin ${cli.argv.code} -ip ${cli.argv.ip}`, function(err, stdout, stderr) {
 				if (err) {
 					if (err.code === 2148734208) {
