@@ -1,0 +1,10 @@
+{
+  "name": "ti.windows-remote-deployment",
+  "version": "1.0.0",
+  "description": "Titanium command and hook to support build time deployment of an application to a remote Windows device",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache 2.0"
+}
