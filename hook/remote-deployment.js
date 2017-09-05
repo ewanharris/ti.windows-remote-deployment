@@ -121,7 +121,7 @@ exports.init = function init(logger, config, cli, appc) {
 				.then(results => {
 					return new Promise((resolve, reject) => {
 						appxLocation = results[0];
-						if (!cli.argv['device-ip']) {
+						if (!cli.argv['ip']) {
 							logger.info('No device-ip argument specified, prompting for one');
 							fields.text({
 								title: 'What is the device-ip?',
@@ -137,21 +137,14 @@ exports.init = function init(logger, config, cli, appc) {
 								}
 							});
 						} else {
-							deviceIP = cli.argv['device-ip'];
+							deviceIP = cli.argv['ip'];
 							resolve(deviceIP);
 						}
 					});
 				}).then(ip => {
 					deviceIP = ip;
 					return new Promise(function(resolve, reject) {
-						// DeployCmd.list()
-						// 	.then(output => {
-						//
-						// 	});
-						console.log(deployCmd);
 						exec(`${deployCmd} list -ip ${deviceIP}`, function(err, stdout, stderr) {
-							console.log(err)
-							console.log()
 							if (err) {
 								// Maybe we're not paired? Prompt for code with docs
 								logger.warn('Was unable to connect to the specified IP');

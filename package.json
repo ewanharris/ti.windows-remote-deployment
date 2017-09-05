@@ -1,10 +1,26 @@
 {
   "name": "ti.windows-remote-deployment",
   "version": "1.0.0",
-  "description": "Titanium command and hook to support build time deployment of an application to a remote Windows device",
+  "description": "Titanium CLI command and hook to support build time deployment of an application to a remote Windows device",
   "scripts": {
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "Apache 2.0"
+  "author": "Ewan Harris (https://github.com/ewanharris)",
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/ewanharris/ti.windows-remote-deployment",
+  "bugs": "https://github.com/ewanharris/ti.windows-remote-deployment/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ewanharris/ti.windows-remote-deployment.git"
+  },
+  "files": [
+      "command/",
+      "hook/",
+      "scripts/",
+      "utils.js",
+      "package.json",
+      "LICENSE"
+  ]
+
 }
