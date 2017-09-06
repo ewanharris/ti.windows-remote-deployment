@@ -1,6 +1,6 @@
 {
   "name": "ti.windows-remote-deployment",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Titanium CLI command and hook to support build time deployment of an application to a remote Windows device",
   "scripts": {
     "postinstall": "node ./scripts/postinstall.js"
