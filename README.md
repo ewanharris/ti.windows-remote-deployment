@@ -6,7 +6,7 @@
 ## Installation
 
 ```
-    npm install -t ti.windows-remote-deployment
+    npm install -g ti.windows-remote-deployment
 ```
 
 

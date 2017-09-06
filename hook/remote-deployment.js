@@ -5,6 +5,8 @@
  * Copyright (c) 2017 by Ewan Harris. All Rights Reserved.
  */
 
+'use strict';
+
 // TODO:
 // - Break winappdeploycmd stuff out into a seperate file
 // - Add prompting for code in this hook
@@ -58,15 +60,7 @@ exports.init = function init(logger, config, cli, appc) {
 			default: null,
 			desc: 'Device IP address'
 		};
-
 		finished(null, data);
-	});
-
-	cli.addHook('build.pre.construct', function(data, finished) {
-		if(cli.argv['remote-deploy']) {
-			cli.argv['build-only'] = true;
-		}
-		finished();
 	});
 
 	/**
@@ -77,8 +71,10 @@ exports.init = function init(logger, config, cli, appc) {
 	 * - Install the app
 	 * - Handle any potential mess
 	 */
-	cli.on('build.post.compile', function(data, finished) {
+	cli.on('build.pre.construct', function(data, finished) {
 		if (cli.argv['remote-deploy']) {
+			cli.argv['build-only'] = true;
+
 			// Performs the setup functionality
 			// 1. Obtain the appxbundle location
 			// 2. Obtain the winappdeploycmd path
@@ -86,12 +82,15 @@ exports.init = function init(logger, config, cli, appc) {
 				new Promise((resolve, reject) => {
 					const appNameRegex = new RegExp(cli.tiapp.name, 'i');
 					const appVerRegex = new RegExp(cli.tiapp.name + '_(\\d+\\.*){4}_(Test|Debug_Test)', 'i');
-
 					const target = cli.argv['T'] || cli.argv.target;
 					const dirName = target === 'wp-device' ? 'win10.ARM' : 'win10.x86';
 					// We're only gonna go to the AppxPackages, from there it's gonna be a minefield
 					// to guess the path so we'll just do some further work from there.
+					const projectDir = cli.argv['project-dir'] || cli.arg['d'];
 					let appxLookupPath = path.join(cli.argv['project-dir'], 'build', 'windows', dirName, 'AppPackages');
+					if (!fs.existsSync(appxLookupPath)) {
+						return finished(new Error('Cannot find the AppPackages dir, please ensure you\'re using --win-sdk 10.0'))
+					}
 					const appNameDir = fs.readdirSync(appxLookupPath).filter(item => appNameRegex.test(item));
 					appxLookupPath = path.join(appxLookupPath, appNameDir[0]);
 					const appVerDir = fs.readdirSync(appxLookupPath).filter(item => appVerRegex.test(item));
@@ -161,7 +160,8 @@ exports.init = function init(logger, config, cli, appc) {
 								// All good in the hood, lets move on...
 								// after checking if the app is installed
 								logger.info('Able to connect to the specified IP');
-								return resolve(utils.parseListData(stdout, cli.tiapp.id));
+								const id = cli.tiapp.windows.id || cli.tiapp.id;
+								return resolve(utils.parseListData(stdout, id));
 							}
 						});
 					});
