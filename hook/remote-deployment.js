@@ -63,6 +63,14 @@ exports.init = function init(logger, config, cli, appc) {
 		finished(null, data);
 	});
 
+	cli.addHook('build.pre.construct', function(data, finished) {
+		if(cli.argv['remote-deploy']) {
+			cli.argv['build-only'] = true;
+		}
+		finished();
+	});
+
+
 	/**
 	 * General thoughts on the structure of the plugin
 	 * - Get the target, use it to determine win.ARM vs win10.x86
@@ -71,7 +79,7 @@ exports.init = function init(logger, config, cli, appc) {
 	 * - Install the app
 	 * - Handle any potential mess
 	 */
-	cli.on('build.pre.construct', function(data, finished) {
+	cli.on('build.post.compile', function(data, finished) {
 		if (cli.argv['remote-deploy']) {
 			cli.argv['build-only'] = true;
 
@@ -86,17 +94,24 @@ exports.init = function init(logger, config, cli, appc) {
 					const dirName = target === 'wp-device' ? 'win10.ARM' : 'win10.x86';
 					// We're only gonna go to the AppxPackages, from there it's gonna be a minefield
 					// to guess the path so we'll just do some further work from there.
+					logger.trace(`Project type is ${dirName}`);
 					const projectDir = cli.argv['project-dir'] || cli.arg['d'];
-					let appxLookupPath = path.join(cli.argv['project-dir'], 'build', 'windows', dirName, 'AppPackages');
+					let appxLookupPath = path.join(projectDir, 'build', 'windows', dirName, 'AppPackages');
+					logger.trace(`Looking for ${appxLookupPath}`);
 					if (!fs.existsSync(appxLookupPath)) {
 						return finished(new Error('Cannot find the AppPackages dir, please ensure you\'re using --win-sdk 10.0'))
 					}
 					const appNameDir = fs.readdirSync(appxLookupPath).filter(item => appNameRegex.test(item));
+					logger.trace(`${appxLookupPath} contents are ${appNameDir}`);
 					appxLookupPath = path.join(appxLookupPath, appNameDir[0]);
+					logger.trace(`Looking for ${appxLookupPath}`);
 					const appVerDir = fs.readdirSync(appxLookupPath).filter(item => appVerRegex.test(item));
+					logger.trace(`${appxLookupPath} contents are ${appVerDir}`);
 					appxLookupPath = path.join(appxLookupPath, appVerDir[0]);
+					logger.trace(`Looking for ${appxLookupPath}`);
 					const appxName = fs.readdirSync(appxLookupPath).filter(item => path.extname(item) === '.appxbundle');
 					const appxLocation = path.join(appxLookupPath, appxName[0]);
+					logger.trace(`Looking for ${appxLocation}`);
 					if (fs.existsSync(appxLocation)) {
 						return resolve(appxLocation);
 					} else {
